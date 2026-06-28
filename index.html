@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NanoCem UT-9 · Инъекционная цементация для ремонта ГЭС</title>
+<meta name="description" content="Ультрадисперсный цемент NanoCem UT-9 (D95 ≤ 9 мкм) для инъекционной цементации и восстановления гидротехнических сооружений ГЭС. ТОО «ЭкоМикс».">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#0a0f0d;
+  --bg-2:#0f1613;
+  --panel:rgba(255,255,255,.035);
+  --panel-brd:rgba(255,255,255,.085);
+  --txt:#eaf0ec;
+  --muted:#94a79e;
+  --green:#6E7F6A;
+  --green-l:#9cb39a;
+  --teal:#2dd4bf;
+  --mint:#5eead4;
+  --grad:linear-gradient(120deg,#9cb39a,#2dd4bf 55%,#5eead4);
+  --grad-d:linear-gradient(120deg,#6E7F6A,#4E6E6B);
+  --shadow:0 30px 70px -30px rgba(45,212,191,.4);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Manrope',system-ui,sans-serif;background:var(--bg);color:var(--txt);line-height:1.7;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+::selection{background:rgba(45,212,191,.3)}
+.mono{font-family:'JetBrains Mono',monospace}
+
+/* ===== Background FX ===== */
+.bg-fx{position:fixed;inset:0;z-index:-2}
+.bg-fx::before{content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(700px 500px at 82% -5%,rgba(45,212,191,.18),transparent 60%),
+    radial-gradient(600px 600px at 3% 18%,rgba(110,127,106,.22),transparent 55%),
+    radial-gradient(900px 700px at 50% 112%,rgba(94,234,212,.1),transparent 60%),
+    var(--bg);}
+.grid-lines{position:fixed;inset:0;z-index:-1;
+  background-image:linear-gradient(rgba(255,255,255,.028) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.028) 1px,transparent 1px);
+  background-size:58px 58px;mask:radial-gradient(circle at 50% 0%,#000,transparent 78%)}
+.blob{position:fixed;border-radius:50%;filter:blur(85px);opacity:.45;z-index:-1;animation:float 20s ease-in-out infinite}
+.blob.b1{width:480px;height:480px;background:rgba(45,212,191,.22);top:-120px;right:-80px}
+.blob.b2{width:520px;height:520px;background:rgba(110,127,106,.3);bottom:-200px;left:-120px;animation-delay:-7s}
+@keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(40px,-40px)}}
+
+/* ===== Nav ===== */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;
+  padding:16px clamp(18px,5vw,64px);backdrop-filter:blur(14px);background:rgba(10,15,13,0);border-bottom:1px solid transparent;transition:.4s}
+nav.scrolled{background:rgba(10,15,13,.78);border-bottom:1px solid var(--panel-brd)}
+.logo{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.5px;font-size:1.02rem}
+.logo .dot{width:36px;height:36px;border-radius:11px;background:var(--grad);display:grid;place-items:center;box-shadow:var(--shadow)}
+.logo .dot svg{width:19px;height:19px}
+.logo small{display:block;font-size:.62rem;letter-spacing:2px;color:var(--muted);font-weight:600}
+.nav-links{display:flex;gap:30px;list-style:none}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:.9rem;font-weight:500;transition:.25s;position:relative}
+.nav-links a:hover{color:var(--txt)}
+.nav-links a::after{content:"";position:absolute;left:0;bottom:-6px;width:0;height:2px;background:var(--grad);transition:.3s}
+.nav-links a:hover::after{width:100%}
+.nav-cta{padding:10px 20px;border-radius:12px;background:var(--grad);color:#08110d;font-weight:700;text-decoration:none;font-size:.88rem;transition:.25s}
+.nav-cta:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.burger{display:none;font-size:1.4rem;cursor:pointer}
+
+/* ===== Layout ===== */
+section{padding:clamp(64px,8vw,120px) clamp(18px,5vw,64px);position:relative}
+.wrap{max-width:1180px;margin:0 auto}
+.eyebrow{display:inline-flex;align-items:center;gap:9px;font-size:.74rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--mint);
+  padding:7px 14px;border:1px solid var(--panel-brd);border-radius:99px;background:var(--panel);margin-bottom:22px}
+.eyebrow .pulse{width:7px;height:7px;border-radius:50%;background:var(--mint);animation:pulse 2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(94,234,212,.6)}70%{box-shadow:0 0 0 12px rgba(94,234,212,0)}100%{box-shadow:0 0 0 0 rgba(94,234,212,0)}}
+h1,h2,h3{line-height:1.15;font-weight:800;letter-spacing:-.02em}
+.gradient-text{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.section-head{max-width:740px;margin-bottom:52px}
+.section-head h2{font-size:clamp(1.9rem,4vw,3rem);margin-bottom:16px}
+.section-head p{color:var(--muted);font-size:1.06rem}
+
+/* ===== Hero ===== */
+.hero{min-height:100vh;display:flex;align-items:center;padding-top:120px}
+.hero h1{font-size:clamp(2.3rem,6.4vw,4.8rem);margin-bottom:24px}
+.hero .lead{font-size:clamp(1.02rem,2vw,1.26rem);color:var(--muted);max-width:640px;margin-bottom:38px}
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap}
+.btn{padding:15px 30px;border-radius:14px;font-weight:700;text-decoration:none;font-size:1rem;transition:.3s;display:inline-flex;align-items:center;gap:10px;cursor:pointer;border:none}
+.btn-primary{background:var(--grad);color:#08110d}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.btn-ghost{background:var(--panel);color:var(--txt);border:1px solid var(--panel-brd)}
+.btn-ghost:hover{border-color:var(--mint);transform:translateY(-3px)}
+.hero-stats{display:flex;gap:42px;margin-top:60px;flex-wrap:wrap}
+.hero-stats .s b{font-size:clamp(1.9rem,4vw,2.7rem);font-weight:800;display:block;line-height:1.1}
+.hero-stats .s span{color:var(--muted);font-size:.9rem}
+
+/* ===== Cards ===== */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:20px}
+.card{background:var(--panel);border:1px solid var(--panel-brd);border-radius:20px;padding:28px;transition:.35s}
+.card:hover{transform:translateY(-6px);border-color:rgba(45,212,191,.4)}
+.card .ico{width:52px;height:52px;border-radius:14px;background:rgba(45,212,191,.12);display:grid;place-items:center;margin-bottom:18px;font-size:1.5rem}
+.card h3{font-size:1.22rem;margin-bottom:9px}
+.card p{color:var(--muted);font-size:.95rem}
+
+/* ===== Schematic (white blueprint card) ===== */
+.split{display:grid;grid-template-columns:1.15fr .85fr;gap:36px;align-items:center}
+.split.rev{grid-template-columns:.85fr 1.15fr}
+.blueprint{background:#fff;border-radius:20px;padding:14px;box-shadow:0 30px 70px -28px rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.12)}
+.blueprint svg{display:block;width:100%;height:auto;border-radius:12px}
+.split h3{font-size:clamp(1.4rem,3vw,1.9rem);margin-bottom:14px}
+.split p{color:var(--muted);margin-bottom:14px}
+.tag{display:inline-block;font-size:.78rem;font-weight:600;letter-spacing:1px;color:var(--mint);margin-bottom:14px;font-family:'JetBrains Mono',monospace}
+.bullets{list-style:none;display:flex;flex-direction:column;gap:12px}
+.bullets li{display:flex;gap:12px;color:var(--muted);font-size:.97rem}
+.bullets li b{color:var(--txt)}
+.bullets li::before{content:"";flex:none;width:9px;height:9px;border-radius:3px;background:var(--grad);margin-top:8px}
+
+/* ===== Steps ===== */
+.timeline{position:relative;margin-top:24px}
+.timeline::before{content:"";position:absolute;left:27px;top:10px;bottom:10px;width:2px;background:linear-gradient(var(--mint),var(--green));opacity:.4}
+.step{display:flex;gap:24px;padding:18px 0;align-items:flex-start}
+.step .num{flex:none;width:56px;height:56px;border-radius:50%;background:var(--bg-2);border:2px solid var(--mint);display:grid;place-items:center;font-weight:800;font-size:1.15rem;color:var(--mint);box-shadow:0 0 24px rgba(94,234,212,.22);z-index:2}
+.step .body h3{font-size:1.22rem;margin-bottom:5px}
+.step .body p{color:var(--muted)}
+
+/* ===== Charts ===== */
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.chart-card{background:var(--panel);border:1px solid var(--panel-brd);border-radius:22px;padding:26px}
+.chart-card h3{font-size:1.15rem;margin-bottom:5px}
+.chart-card .sub{color:var(--muted);font-size:.88rem;margin-bottom:16px}
+.chart-box{position:relative;height:290px}
+
+/* ===== Tables ===== */
+.tbl{width:100%;border-collapse:collapse;background:var(--panel);border-radius:18px;overflow:hidden;border:1px solid var(--panel-brd)}
+.tbl th,.tbl td{padding:16px 22px;text-align:left;border-bottom:1px solid var(--panel-brd)}
+.tbl th{font-weight:700;font-size:.82rem;letter-spacing:.5px;text-transform:uppercase;color:var(--mint);background:rgba(45,212,191,.05)}
+.tbl td{color:var(--muted)}
+.tbl td:first-child{color:var(--txt);font-weight:600}
+.tbl tr:last-child td{border-bottom:none}
+.tbl .hl{color:var(--mint);font-weight:700}
+.tbl .no{color:#e8917f;font-weight:600}
+
+.spec-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.spec{background:var(--panel);border:1px solid var(--panel-brd);border-radius:16px;padding:22px;transition:.3s}
+.spec:hover{border-color:rgba(45,212,191,.4);transform:translateY(-4px)}
+.spec .k{font-size:.82rem;color:var(--muted);margin-bottom:6px}
+.spec .v{font-size:1.5rem;font-weight:800;font-family:'JetBrains Mono',monospace}
+
+/* ===== CTA / contacts ===== */
+.cta-band{background:linear-gradient(120deg,rgba(45,212,191,.12),rgba(110,127,106,.16));border:1px solid var(--panel-brd);border-radius:28px;padding:clamp(34px,6vw,60px);display:flex;justify-content:center}
+.contact-list{list-style:none;display:flex;flex-wrap:wrap;justify-content:center;gap:32px;align-items:center}
+.contact-list li{display:flex;gap:14px;align-items:center}
+.contact-list li b{font-size:1.05rem}
+.contact-list .ci{flex:none;width:42px;height:42px;border-radius:11px;background:var(--panel);border:1px solid var(--panel-brd);display:grid;place-items:center;font-size:1.1rem}
+.contact-list a{color:var(--txt);text-decoration:none}
+.contact-list small{display:block;color:var(--muted);font-size:.82rem}
+
+/* ===== Footer ===== */
+footer{padding:42px clamp(18px,5vw,64px);border-top:1px solid var(--panel-brd);color:var(--muted);font-size:.9rem}
+.foot-wrap{max-width:1180px;margin:0 auto;display:flex;justify-content:space-between;flex-wrap:wrap;gap:18px;align-items:center}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(40px);transition:.9s cubic-bezier(.16,1,.3,1)}
+.reveal.in{opacity:1;transform:none}
+.reveal.d1{transition-delay:.1s}.reveal.d2{transition-delay:.2s}.reveal.d3{transition-delay:.3s}.reveal.d4{transition-delay:.4s}
+#prog{position:fixed;top:0;left:0;height:3px;width:0;background:var(--grad);z-index:200;transition:width .1s}
+
+@media(max-width:860px){
+  .nav-links,.nav-cta{display:none}.burger{display:block}
+  .chart-grid,.split,.split.rev{grid-template-columns:1fr}
+  .split.rev .blueprint{order:-1}
+  .tbl{display:block;overflow-x:auto;white-space:nowrap}
+}
+@media(max-width:560px){
+  section{padding:56px 18px}
+  .hero{padding-top:104px;min-height:auto;padding-bottom:60px}
+  .hero-stats{gap:26px 32px;margin-top:44px}
+  .hero-stats .s{flex:1 1 40%}
+  .hero-btns .btn{flex:1 1 100%;justify-content:center}
+  .section-head{margin-bottom:38px}
+  .contact-list{flex-direction:column;align-items:flex-start;gap:20px}
+  .chart-box{height:250px}
+  .spec-grid{grid-template-columns:1fr 1fr}
+  .step{gap:16px}.step .num{width:46px;height:46px;font-size:1rem}
+  .logo small{display:none}
+}
+</style>
+</head>
+<body>
+<div class="bg-fx"></div><div class="grid-lines"></div><div class="blob b1"></div><div class="blob b2"></div>
+<div id="prog"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="logo">
+    <span class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="#08110d" stroke-width="2.4"><path d="M12 2v6M5 22c0-4 3-7 7-7s7 3 7 7M8 12h8"/></svg></span>
+    <span>NanoCem UT-9<small>ТОО «ЭКОМИКС»</small></span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#tech">Технология</a></li>
+    <li><a href="#scheme">Схема</a></li>
+    <li><a href="#fill">Заливка</a></li>
+    <li><a href="#why">Почему проникает</a></li>
+    <li><a href="#data">Параметры</a></li>
+  </ul>
+  <a href="#contact" class="nav-cta">Заявка</a>
+  <div class="burger" onclick="document.getElementById('top').scrollIntoView({behavior:'smooth'})">☰</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero wrap" id="top">
+  <div>
+    <span class="eyebrow reveal"><span class="pulse"></span>Ремонт гидротехнических сооружений</span>
+    <h1 class="reveal d1">NanoCem UT-9 — инъекционная цементация <span class="gradient-text">для ремонта ГЭС</span></h1>
+    <p class="lead reveal d2">Ультрадисперсный цемент с крупностью <b style="color:var(--txt)">D95 ≤ 9 мкм</b> проходит туда, где обычный цемент застревает у устья трещины. Останавливаем фильтрацию, восстанавливаем монолитность плотины и основания — без остановки эксплуатации ГЭС.</p>
+    <div class="hero-btns reveal d3">
+      <a href="#scheme" class="btn btn-primary">Как это работает →</a>
+      <a href="#data" class="btn btn-ghost">Технические параметры</a>
+    </div>
+    <div class="hero-stats reveal d4">
+      <div class="s"><b class="gradient-text mono" data-count="9" data-prefix="≤" data-suffix=" мкм">0</b><span>крупность частиц D95</span></div>
+      <div class="s"><b class="gradient-text mono" data-count="5" data-prefix="" data-suffix=" ч">0</b><span>жизнеспособность раствора</span></div>
+      <div class="s"><b class="gradient-text mono" data-count="75" data-prefix="" data-suffix=" МПа">0</b><span>прочность 28 сут</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- TECH -->
+<section id="tech">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow"><span class="pulse"></span>Что это</span>
+      <h2>Технология, которая «лечит» бетон изнутри</h2>
+      <p>Инъекционная цементация — нагнетание под давлением жидкого раствора в трещины, поры и пустоты сооружения и основания через пробуренные скважины. Раствор заполняет пути фильтрации и после твердения образует прочный водонепроницаемый монолит.</p>
+    </div>
+    <div class="cards">
+      <div class="card reveal"><div class="ico">💧</div><h3>Гидроизоляция</h3><p>Перекрытие путей фильтрации через трещины, рабочие и температурные швы, контактные зоны.</p></div>
+      <div class="card reveal d1"><div class="ico">🧱</div><h3>Монолитизация</h3><p>Восстановление противофильтрационной целостности плотины, основания и контакта «бетон–скала».</p></div>
+      <div class="card reveal d2"><div class="ico">🔬</div><h3>Проникающая способность</h3><p>D95 ≤ 9 мкм против 60–90 мкм у портландцемента — раствор доходит до дна микротрещины.</p></div>
+      <div class="card reveal d3"><div class="ico">⚙️</div><h3>Под нагрузкой</h3><p>Работы ведутся без сброса водохранилища и остановки выработки энергии.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- SCHEME -->
+<section id="scheme">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow"><span class="pulse"></span>Общая схема</span>
+      <h2>Как устроен процесс инъектирования</h2>
+      <p>Раствор готовится на инъекционной станции, под давлением подаётся по шлангу в скважину через пакер и нагнетается в зону обработки, формируя цементационную завесу в основании.</p>
+    </div>
+    <div class="split reveal">
+      <div class="blueprint">
+        <svg viewBox="0 0 720 410" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Схема инъекционной цементации плотины">
+         <defs><pattern id="rock" width="22" height="22" patternUnits="userSpaceOnUse"><path d="M0,22 L22,0" stroke="#cdd1c8" stroke-width="1"/></pattern></defs>
+         <rect width="720" height="410" fill="#ffffff"/>
+         <text x="20" y="28" font-family="'JetBrains Mono',monospace" font-size="12" letter-spacing="2" fill="#4F5C4C">СХЕМА · ИНЪЕКЦИОННАЯ ЦЕМЕНТАЦИЯ</text>
+         <rect x="0" y="250" width="720" height="160" fill="#eef0ec"/><rect x="0" y="250" width="720" height="160" fill="url(#rock)"/>
+         <line x1="0" y1="250" x2="720" y2="250" stroke="#b9bdb2" stroke-width="1.2"/>
+         <rect x="0" y="162" width="205" height="88" fill="#4E6E6B" opacity="0.14"/><line x1="0" y1="162" x2="205" y2="162" stroke="#4E6E6B" stroke-width="1.2" opacity="0.6"/>
+         <text x="40" y="200" font-family="'JetBrains Mono',monospace" font-size="11" fill="#4E6E6B">водохранилище</text>
+         <path d="M205,150 L245,150 L335,250 L205,250 Z" fill="#dfe2dc" stroke="#b9bdb2" stroke-width="1.2"/>
+         <text x="212" y="210" font-family="'JetBrains Mono',monospace" font-size="11" fill="#8A8F88">тело плотины</text>
+         <rect x="505" y="220" width="76" height="30" rx="2" fill="#33372f"/><rect x="512" y="226" width="18" height="18" rx="1" fill="#6E7F6A"/>
+         <text x="536" y="239" font-family="'JetBrains Mono',monospace" font-size="10" fill="#dfe2dc">PUMP</text>
+         <text x="505" y="214" font-family="'JetBrains Mono',monospace" font-size="11" fill="#4F5C4C">инъекционная станция</text>
+         <path d="M505,232 C455,232 425,238 400,250" fill="none" stroke="#8A8F88" stroke-width="3"/>
+         <line x1="396" y1="250" x2="396" y2="352" stroke="#b9bdb2" stroke-width="1.4"/><line x1="404" y1="250" x2="404" y2="352" stroke="#b9bdb2" stroke-width="1.4"/>
+         <rect x="394" y="298" width="12" height="15" fill="#4F5C4C"/>
+         <text x="412" y="290" font-family="'JetBrains Mono',monospace" font-size="11" fill="#4F5C4C">скважина · пакер</text>
+         <path d="M400,258 l0,26" stroke="#6E7F6A" stroke-width="2"/><path d="M400,286 l-4,-7 l8,0 z" fill="#6E7F6A"/>
+         <text x="410" y="272" font-family="'JetBrains Mono',monospace" font-size="11" fill="#6E7F6A">нагнетание под давлением</text>
+         <ellipse cx="400" cy="340" rx="6" ry="4" fill="#6E7F6A" opacity="0.22"><animate attributeName="rx" values="6;64;64;6" keyTimes="0;0.7;0.9;1" dur="5s" repeatCount="indefinite"/><animate attributeName="ry" values="4;30;30;4" keyTimes="0;0.7;0.9;1" dur="5s" repeatCount="indefinite"/></ellipse>
+         <g stroke="#6E7F6A" stroke-width="2" stroke-linecap="round">
+           <line x1="400" y1="340" x2="356" y2="356"><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.4;0.9;1" dur="5s" begin="0s" repeatCount="indefinite"/></line>
+           <line x1="400" y1="340" x2="444" y2="356"><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.4;0.9;1" dur="5s" begin="0.3s" repeatCount="indefinite"/></line>
+           <line x1="400" y1="340" x2="368" y2="328"><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.4;0.9;1" dur="5s" begin="0.6s" repeatCount="indefinite"/></line>
+           <line x1="400" y1="340" x2="432" y2="328"><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.4;0.9;1" dur="5s" begin="0.9s" repeatCount="indefinite"/></line>
+           <line x1="400" y1="340" x2="400" y2="362"><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.4;0.9;1" dur="5s" begin="1.2s" repeatCount="indefinite"/></line>
+         </g>
+         <text x="430" y="346" font-family="'JetBrains Mono',monospace" font-size="11" fill="#4F5C4C">цементационная завеса</text>
+         <text x="540" y="395" font-family="'JetBrains Mono',monospace" font-size="11" fill="#8A8F88">скальное основание</text>
+         <circle r="4.2" fill="#6E7F6A"><animateMotion dur="2.4s" repeatCount="indefinite" path="M505,232 C455,232 425,238 400,250 L400,338"/></circle>
+         <circle r="4.2" fill="#6E7F6A"><animateMotion dur="2.4s" begin="-0.8s" repeatCount="indefinite" path="M505,232 C455,232 425,238 400,250 L400,338"/></circle>
+         <circle r="4.2" fill="#6E7F6A"><animateMotion dur="2.4s" begin="-1.6s" repeatCount="indefinite" path="M505,232 C455,232 425,238 400,250 L400,338"/></circle>
+        </svg>
+      </div>
+      <div>
+        <span class="tag">// АНИМАЦИЯ ПРОЦЕССА</span>
+        <h3>Импульсы раствора → пакер → завеса</h3>
+        <p>Импульсы раствора идут от насоса по шлангу в скважину, через пакер в интервал нагнетания, и расходятся по трещинам — формируется растущая зона уплотнения.</p>
+        <ul class="bullets">
+          <li><span><b>Инъекционная станция</b> — приготовление и подача раствора под заданным давлением.</span></li>
+          <li><span><b>Скважина + пакер</b> — пакер изолирует интервал, давление работает точечно.</span></li>
+          <li><span><b>Нагнетание</b> — раствор продавливается в трещины и поры.</span></li>
+          <li><span><b>Цементационная завеса</b> — сплошной водонепроницаемый экран.</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FILL -->
+<section id="fill">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow"><span class="pulse"></span>Заливка</span>
+      <h2>Как идёт нагнетание раствора</h2>
+      <p>Под давлением раствор входит в трещину от устья скважины и заполняет её по всей глубине, вытесняя воздух и воду.</p>
+    </div>
+    <div class="split rev reveal">
+      <div>
+        <span class="tag">// ЗАПОЛНЕНИЕ ТРЕЩИНЫ</span>
+        <h3>Сверху вниз — до полного объёма</h3>
+        <p>Через форсунку (устье) раствор под давлением P поступает в трещину и заполняет её до дна; частицы свободно проходят по всей высоте щели.</p>
+        <ul class="bullets">
+          <li><span><b>Жизнеспособность 4–5 ч</b> — раствор не «встаёт» в линии и доходит до дальних трещин.</span></li>
+          <li><span><b>Свободная вода ≤ 0,5 %</b> — суспензия стабильна, не расслаивается.</span></li>
+          <li><span><b>Регулируемая консистенция</b> — жидкая для тонких трещин, сгущённая для пустот.</span></li>
+          <li><span><b>Первичное схватывание ~60 мин</b> — управляемый набор после нагнетания.</span></li>
+        </ul>
+      </div>
+      <div class="blueprint">
+        <svg viewBox="0 0 480 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Анимация заливки трещины раствором">
+         <defs>
+          <pattern id="rock2" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M0,20 L20,0" stroke="#e2e4df" stroke-width="1"/></pattern>
+          <linearGradient id="grout" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7d8e78"/><stop offset="1" stop-color="#6E7F6A"/></linearGradient>
+          <clipPath id="fis"><path d="M222,62 L214,112 L226,152 L212,202 L224,252 L219,292 L253,292 L261,252 L249,202 L263,152 L251,112 L258,62 Z"/></clipPath>
+         </defs>
+         <rect width="480" height="330" fill="#ffffff"/>
+         <text x="20" y="28" font-family="'JetBrains Mono',monospace" font-size="12" letter-spacing="2" fill="#4F5C4C">АНИМАЦИЯ ЗАЛИВКИ · НАГНЕТАНИЕ</text>
+         <rect x="120" y="55" width="240" height="245" fill="#f1f2ee"/><rect x="120" y="55" width="240" height="245" fill="url(#rock2)"/>
+         <path d="M222,62 L214,112 L226,152 L212,202 L224,252 L219,292 L253,292 L261,252 L249,202 L263,152 L251,112 L258,62 Z" fill="#F5F6F3"/>
+         <g clip-path="url(#fis)"><rect x="205" y="62" width="72" height="0" fill="url(#grout)"><animate attributeName="height" values="0;230;230;0" keyTimes="0;0.72;0.92;1" dur="5.5s" repeatCount="indefinite"/></rect></g>
+         <path d="M222,62 L214,112 L226,152 L212,202 L224,252 L219,292 L253,292 L261,252 L249,202 L263,152 L251,112 L258,62 Z" fill="none" stroke="#b9bdb2" stroke-width="1.4"/>
+         <rect x="232" y="38" width="16" height="16" rx="1" fill="#33372f"/><path d="M240,54 l0,8" stroke="#33372f" stroke-width="3"/>
+         <text x="256" y="50" font-family="'JetBrains Mono',monospace" font-size="11" fill="#4F5C4C">NanoCem UT-9 · P</text>
+         <g fill="#cdd6c9">
+          <circle r="2.6"><animateMotion dur="1.6s" repeatCount="indefinite" path="M240,60 L238,290"/></circle>
+          <circle r="2.6"><animateMotion dur="1.6s" begin="-0.5s" repeatCount="indefinite" path="M240,60 L242,290"/></circle>
+          <circle r="2.6"><animateMotion dur="1.6s" begin="-1.0s" repeatCount="indefinite" path="M240,60 L239,290"/></circle>
+         </g>
+         <text x="300" y="180" font-family="'JetBrains Mono',monospace" font-size="11" fill="#8A8F88">заполнение</text>
+         <text x="300" y="196" font-family="'JetBrains Mono',monospace" font-size="11" fill="#8A8F88">трещины</text>
+         <text x="110" y="180" font-family="'JetBrains Mono',monospace" font-size="11" fill="#8A8F88" text-anchor="end">бетон /</text>
+         <text x="110" y="196" font-family="'JetBrains Mono',monospace" font-size="11" fill="#8A8F88" text-anchor="end">скала</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STEPS -->
+<section id="steps">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow"><span class="pulse"></span>Технология по шагам</span>
+      <h2>Последовательность нагнетания</h2>
+    </div>
+    <div class="timeline">
+      <div class="step reveal"><div class="num">1</div><div class="body"><h3>Пакеровка</h3><p>В скважину устанавливается пакер, изолирующий обрабатываемый интервал.</p></div></div>
+      <div class="step reveal d1"><div class="num">2</div><div class="body"><h3>Опытное нагнетание</h3><p>Определяется водопоглощение, подбирается стартовая консистенция (В/Ц) под фактическое раскрытие трещин.</p></div></div>
+      <div class="step reveal d2"><div class="num">3</div><div class="body"><h3>Нагнетание до «отказа»</h3><p>Раствор подаётся под давлением, пока приём не упадёт до проектного критерия — трещины заполнены.</p></div></div>
+      <div class="step reveal d3"><div class="num">4</div><div class="body"><h3>Выдержка</h3><p>Раствор схватывается (первичное ~60 мин, рабочее окно 4–5 ч) и набирает прочность.</p></div></div>
+      <div class="step reveal d4"><div class="num">5</div><div class="body"><h3>Следующий интервал / скважина</h3><p>Сгущение сетки очередями: падение водопоглощения — критерий сформированной завесы.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section id="why">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow"><span class="pulse"></span>Почему проникает</span>
+      <h2>Туда, где обычный цемент бессилен</h2>
+      <p>Обычный портландцемент (частицы 60–90 мкм) застревает на входе в тонкую трещину. Ультрадисперсный NanoCem UT-9 (D95 ≤ 9 мкм) проходит вглубь и заполняет щель до дна.</p>
+    </div>
+    <div class="split reveal">
+      <div class="blueprint">
+        <svg viewBox="0 0 480 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Сравнение проникновения частиц">
+         <rect width="480" height="250" fill="#ffffff"/>
+         <text x="20" y="26" font-family="'JetBrains Mono',monospace" font-size="12" letter-spacing="2" fill="#4F5C4C">ПОЧЕМУ ПРОНИКАЕТ · РАЗМЕР ЧАСТИЦЫ</text>
+         <text x="150" y="56" font-family="'JetBrains Mono',monospace" font-size="11" fill="#8A8F88" text-anchor="middle">обычный цемент</text>
+         <rect x="150" y="72" width="14" height="150" fill="#eef0ec" stroke="#cdd1c8"/>
+         <g fill="#8A8F88">
+          <circle cx="148" cy="60" r="9"><animate attributeName="cy" values="60;66;60" dur="1.6s" repeatCount="indefinite"/></circle>
+          <circle cx="166" cy="58" r="9"><animate attributeName="cy" values="58;64;58" dur="1.8s" repeatCount="indefinite"/></circle>
+          <circle cx="157" cy="46" r="9"><animate attributeName="cy" values="46;52;46" dur="1.5s" repeatCount="indefinite"/></circle>
+         </g>
+         <text x="157" y="240" font-family="'JetBrains Mono',monospace" font-size="11" fill="#9a5a4f" text-anchor="middle">✕ застревает у устья</text>
+         <text x="327" y="56" font-family="'JetBrains Mono',monospace" font-size="11" fill="#4F5C4C" text-anchor="middle">NanoCem · D95 ≤ 9 мкм</text>
+         <rect x="320" y="72" width="14" height="150" fill="#eef0ec" stroke="#cdd1c8"/><rect x="320" y="72" width="14" height="150" fill="#6E7F6A" opacity="0.18"/>
+         <rect x="320" y="222" width="14" height="0" fill="#6E7F6A"><animate attributeName="height" values="0;150" dur="3s" begin="0.4s" fill="freeze" repeatCount="1"/><animate attributeName="y" values="222;72" dur="3s" begin="0.4s" fill="freeze" repeatCount="1"/></rect>
+         <g fill="#6E7F6A">
+          <circle r="3"><animateMotion dur="1.4s" repeatCount="indefinite" path="M327,62 L327,218"/></circle>
+          <circle r="3"><animateMotion dur="1.4s" begin="-0.35s" repeatCount="indefinite" path="M327,62 L327,218"/></circle>
+          <circle r="3"><animateMotion dur="1.4s" begin="-0.7s" repeatCount="indefinite" path="M327,62 L327,218"/></circle>
+          <circle r="3"><animateMotion dur="1.4s" begin="-1.05s" repeatCount="indefinite" path="M327,62 L327,218"/></circle>
+         </g>
+         <text x="327" y="240" font-family="'JetBrains Mono',monospace" font-size="11" fill="#4F5C4C" text-anchor="middle">✓ проникает до дна</text>
+        </svg>
+      </div>
+      <div>
+        <span class="tag">// СРАВНЕНИЕ ДИСПЕРСНОСТИ</span>
+        <table class="tbl">
+          <tr><th>Показатель</th><th>Обычный</th><th>NanoCem UT-9</th></tr>
+          <tr><td>D95</td><td class="no">~60–90 мкм</td><td class="hl">≤ 9 мкм</td></tr>
+          <tr><td>D50</td><td class="no">~15–30 мкм</td><td class="hl">~3,5 мкм</td></tr>
+          <tr><td>Трещины</td><td>от ~0,3–0,5 мм</td><td class="hl">микротрещины</td></tr>
+          <tr><td>Грунты</td><td>гравий, кр. песок</td><td class="hl">мелко-/среднезерн.</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DATA / CHARTS -->
+<section id="data">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow"><span class="pulse"></span>Параметры и эффективность</span>
+      <h2>Результат в цифрах</h2>
+      <p>Графики по реальным параметрам NanoCem UT-9: дисперсность против обычного цемента, набор прочности и кривая нагнетания.</p>
+    </div>
+    <div class="chart-grid">
+      <div class="chart-card reveal"><h3>Дисперсность частиц</h3><div class="sub">Крупность D50 / D95, мкм — меньше = глубже проникновение</div><div class="chart-box"><canvas id="chartParticle"></canvas></div></div>
+      <div class="chart-card reveal d1"><h3>Набор прочности</h3><div class="sub">Прочность на сжатие, МПа</div><div class="chart-box"><canvas id="chartStrength"></canvas></div></div>
+      <div class="chart-card reveal d2"><h3>Давление нагнетания во времени</h3><div class="sub">Типовая кривая инъектирования скважины, бар</div><div class="chart-box"><canvas id="chartPressure"></canvas></div></div>
+      <div class="chart-card reveal d3"><h3>Водопоглощение по очередям</h3><div class="sub">Удельное водопоглощение, ед. Люжона (Lu)</div><div class="chart-box"><canvas id="chartLugeon"></canvas></div></div>
+    </div>
+
+    <div class="section-head reveal" style="margin-top:64px">
+      <h2 style="font-size:clamp(1.5rem,3vw,2.1rem)">NanoCem UT-9 — характеристики</h2>
+    </div>
+    <div class="spec-grid reveal">
+      <div class="spec"><div class="k">Крупность D50 / D95</div><div class="v gradient-text">3,5 / ≤9 <span style="font-size:.9rem">мкм</span></div></div>
+      <div class="spec"><div class="k">Плотность суспензии</div><div class="v">1,85–1,95</div></div>
+      <div class="spec"><div class="k">Свободная вода</div><div class="v">≤ 0,5 %</div></div>
+      <div class="spec"><div class="k">Жизнеспособность</div><div class="v">4–5 ч</div></div>
+      <div class="spec"><div class="k">Прочность 28 сут</div><div class="v gradient-text">65–75 <span style="font-size:.9rem">МПа</span></div></div>
+      <div class="spec"><div class="k">Водонепроницаемость</div><div class="v">W14–W16</div></div>
+      <div class="spec"><div class="k">Морозостойкость</div><div class="v">F75–F100</div></div>
+      <div class="spec"><div class="k">Адгезия к бетону</div><div class="v">≥ 2,5 <span style="font-size:.9rem">МПа</span></div></div>
+    </div>
+    <p class="mono reveal" style="color:var(--muted);font-size:.82rem;margin-top:20px">Соответствие декларируется по ТУ 5745-001-171140033124-2025.</p>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="wrap">
+    <div class="cta-band reveal">
+      <ul class="contact-list">
+        <li><span class="ci">🏢</span><div><b>ТОО «ЭкоМикс» (EasyMix)</b><small>РК, г. Актобе, квартал Промзона, участок 679/17</small></div></li>
+        <li><span class="ci">📞</span><div><a href="tel:+77011111964">+7 701 111 19 64</a></div></li>
+        <li><span class="ci">✉️</span><div><a href="mailto:info@easymix.kz">info@easymix.kz</a></div></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-wrap">
+    <div class="logo"><span class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="#08110d" stroke-width="2.4"><path d="M12 2v6M5 22c0-4 3-7 7-7s7 3 7 7M8 12h8"/></svg></span><span>NanoCem UT-9</span></div>
+    <div>© 2026 · ТОО «ЭкоМикс» · Инъекционная цементация для ремонта ГЭС</div>
+  </div>
+</footer>
+
+<script>
+const nav=document.getElementById('nav'),prog=document.getElementById('prog');
+addEventListener('scroll',()=>{nav.classList.toggle('scrolled',scrollY>40);const h=document.documentElement.scrollHeight-innerHeight;prog.style.width=(scrollY/h*100)+'%';});
+
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+const countIO=new IntersectionObserver(es=>es.forEach(e=>{
+  if(!e.isIntersecting)return;const el=e.target;
+  const end=+el.dataset.count,suf=el.dataset.suffix||'',pre=el.dataset.prefix||'';let cur=0;
+  const t=setInterval(()=>{cur+=Math.max(1,Math.ceil(end/35));if(cur>=end){cur=end;clearInterval(t)}el.textContent=pre+cur+suf;},30);
+  countIO.unobserve(el);
+}),{threshold:.6});
+document.querySelectorAll('[data-count]').forEach(el=>countIO.observe(el));
+
+/* Charts */
+Chart.defaults.color='#94a79e';Chart.defaults.font.family='Manrope';Chart.defaults.font.size=13;
+const grid={color:'rgba(255,255,255,.06)'};
+const made={};
+function build(id,fn){const cv=document.getElementById(id);const o=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting&&!made[id]){made[id]=1;fn(cv.getContext('2d'))}}),{threshold:.3});o.observe(cv);}
+const gradC=(ctx,c1,c2)=>{const g=ctx.createLinearGradient(0,0,0,290);g.addColorStop(0,c1);g.addColorStop(1,c2);return g;};
+
+build('chartParticle',ctx=>new Chart(ctx,{type:'bar',data:{
+  labels:['D50','D95'],
+  datasets:[
+    {label:'Обычный цемент',data:[22,75],backgroundColor:'rgba(232,145,127,.7)',borderRadius:8},
+    {label:'NanoCem UT-9',data:[3.5,9],backgroundColor:gradC(ctx,'#5eead4','#2dd4bf'),borderRadius:8}
+  ]},options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{labels:{usePointStyle:true,boxWidth:8}}},
+    scales:{y:{grid,title:{display:true,text:'мкм'}},x:{grid:{display:false}}},
+    animation:{duration:1400,easing:'easeOutQuart'}}}));
+
+build('chartStrength',ctx=>new Chart(ctx,{type:'line',data:{
+  labels:['24 часа','7 суток','28 суток'],
+  datasets:[{label:'МПа',data:[12,45,70],borderColor:'#5eead4',backgroundColor:'rgba(94,234,212,.13)',fill:true,tension:.4,pointBackgroundColor:'#5eead4',pointRadius:5,borderWidth:3}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+    scales:{y:{grid,title:{display:true,text:'МПа на сжатие'}},x:{grid:{display:false}}},
+    animation:{duration:1600,easing:'easeOutCubic'}}}));
+
+build('chartPressure',ctx=>new Chart(ctx,{type:'line',data:{
+  labels:['0','5','10','15','20','25','30','35','40'],
+  datasets:[{label:'Давление, бар',data:[0,8,14,19,23,28,33,37,40],borderColor:'#9cb39a',backgroundColor:'rgba(110,127,106,.16)',fill:true,tension:.4,pointBackgroundColor:'#9cb39a',pointRadius:4,borderWidth:3}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+    scales:{y:{grid,title:{display:true,text:'бар'}},x:{grid,title:{display:true,text:'время, мин'}}},
+    animation:{duration:1600,easing:'easeOutCubic'}}}));
+
+build('chartLugeon',ctx=>new Chart(ctx,{type:'bar',data:{
+  labels:['Исходно','I очередь','II очередь','III очередь','Контроль'],
+  datasets:[{label:'Lu',data:[28,16,8,3,1.5],backgroundColor:ctx=>{const v=ctx.raw;return v>15?'rgba(232,145,127,.75)':gradC(ctx.chart.ctx,'#5eead4','#2dd4bf')},borderRadius:8}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+    scales:{y:{grid,title:{display:true,text:'ед. Люжона'}},x:{grid:{display:false}}},
+    animation:{duration:1500,easing:'easeOutQuart'}}}));
+
+document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{const t=document.querySelector(a.getAttribute('href'));if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth'})}}));
+</script>
+</body>
+</html>
